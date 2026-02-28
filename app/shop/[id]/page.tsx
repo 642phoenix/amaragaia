@@ -84,7 +84,7 @@ export default function ProductDetailPage() {
   // relatedProducts state is populated by effect above
 
   return (
-    <div style={{ minHeight: "100vh", paddingBottom: "4rem" }}>
+    <div style={{ minHeight: "100vh", paddingBottom: "5rem" }}>
       <div className="container" style={{ paddingTop: "3rem" }}>
         {/* Back button */}
         <button
