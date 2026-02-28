@@ -12,7 +12,9 @@ export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { addToCart } = useCart();
-  const id = parseInt(params.id as string);
+  const id = params.id as string;
+  const [product, setProduct] = useState<any | null>(null);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
   // product state is loaded in effect below
 
   const [quantity, setQuantity] = useState(1);
@@ -30,6 +32,35 @@ export default function ProductDetailPage() {
     message: "",
     inputPlaceholder: "1",
   });
+
+  useEffect(() => {
+  if (!id) return;
+
+  const loadProduct = async () => {
+    try {
+      const res = await fetch(`/api/products/${id}`);
+      if (!res.ok) {
+        setProduct(null);
+        return;
+      }
+
+      const data = await res.json();
+      setProduct(data);
+
+      // optional: fetch related products
+      const rel = await fetch(`/api/products`);
+      const all = await rel.json();
+      setRelatedProducts(
+        all.filter((p: any) => p.category === data.category && p.id !== data.id)
+      );
+    } catch (err) {
+      console.error(err);
+      setProduct(null);
+    }
+  };
+
+  loadProduct();
+}, [id]);
 
   if (!product) {
     return (
