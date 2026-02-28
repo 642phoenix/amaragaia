@@ -3,11 +3,11 @@ import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
 export async function GET(
-  _req: Request,
-  context: { params: Promise<{ id: string }> }
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
 
     const client = await clientPromise;
     const db = client.db();
@@ -19,7 +19,6 @@ export async function GET(
     if (!prod)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-    // convert to client format
     const sanitized = { ...prod, id: prod._id.toString() };
     return NextResponse.json(sanitized);
   } catch (err) {
@@ -33,10 +32,10 @@ export async function GET(
 
 export async function PUT(
   req: Request,
-  context: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
     const body = await req.json();
 
     const client = await clientPromise;
@@ -44,7 +43,10 @@ export async function PUT(
 
     const result = await db
       .collection("products")
-      .updateOne({ _id: new ObjectId(id) }, { $set: body });
+      .updateOne(
+        { _id: new ObjectId(id) },
+        { $set: body }
+      );
 
     if (result.matchedCount === 0)
       return NextResponse.json({ error: "Not found" }, { status: 404 });
@@ -60,11 +62,11 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _req: Request,
-  context: { params: Promise<{ id: string }> }
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await context.params;
+    const { id } = await params;
 
     const client = await clientPromise;
     const db = client.db();
