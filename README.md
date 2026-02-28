@@ -2,7 +2,22 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 ## Getting Started
 
-First, run the development server:
+This project now uses MongoDB for product storage. Before running the app, add a `.env.local` file at the root containing your connection string:
+
+```env
+MONGO_URI=mongodb+srv://<user>:<password>@cluster0.example.mongodb.net/<dbname>?retryWrites=true&w=majority
+```
+
+You can seed the `products` collection manually or by adding items via the admin dashboard. A helper script is included at `scripts/seedProducts.ts` — run it with ts-node or compile it first:
+
+```bash
+npm install -D ts-node typescript @types/node
+npx ts-node scripts/seedProducts.ts
+```
+
+Adjust the sample data as needed.
+
+Once the environment variable is set, start the development server:
 
 ```bash
 npm run dev
@@ -13,7 +28,6 @@ pnpm dev
 # or
 bun dev
 ```
-
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
