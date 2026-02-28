@@ -6,7 +6,7 @@ import { CartItem, Product } from "@/types/product";
 interface CartContextType {
   cart: CartItem[];
   addToCart: (product: Product) => void;
-  updateQuantity: (id: number, qty: number) => void;
+  updateQuantity: (id: string, qty: number) => void;
   clearCart: () => void;
   getTotal: () => number;
   getCount: () => number;
@@ -39,7 +39,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const updateQuantity = (id: number, qty: number) => {
+  const updateQuantity = (id: string, qty: number) => {
     setCart(prev =>
       qty <= 0
         ? prev.filter(i => i.id !== id)
