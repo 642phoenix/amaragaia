@@ -6,7 +6,7 @@ export async function GET() {
     const client = await clientPromise;
 
     // ✅ MUST explicitly select DB
-    const db = client.db();
+    const db = client.db("products");
     const collection = db.collection("products");
 
     const products = await collection.find({}).toArray();
