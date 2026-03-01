@@ -6,7 +6,7 @@ export async function GET() {
     const client = await clientPromise;
 
     // 🔑 MUST MATCH ATLAS EXACTLY
-    const db = client.db("products");
+    const db = client.db();
     const collection = db.collection("products");
 
     const products = await collection.find({}).toArray();
