@@ -16,7 +16,7 @@ export async function GET() {
       ...p,
       id: p._id.toString(),
     }));
-    console.log("Fetched products:",db, collection, sanitized);
+    console.log(`Fetched products from database: ${db}.${collection}`, sanitized);
     return NextResponse.json(sanitized);
   } catch (error) {
     console.error("GET /api/products error:", error);
