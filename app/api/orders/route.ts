@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
+export const runtime = "nodejs";
 
 // Simple placeholder; you can expand into full CRUD later
 export async function GET(req: Request) {
