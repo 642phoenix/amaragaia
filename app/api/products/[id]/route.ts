@@ -2,27 +2,36 @@ import { NextResponse } from "next/server";
 import clientPromise from "@/lib/mongodb";
 import { ObjectId } from "mongodb";
 
-export async function GET(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+type Params = {
+  params: {
+    id: string;
+  };
+};
+
+export async function GET(req: Request, { params }: Params) {
   try {
-    const { id } = await params;
+    const { id } = params;
+
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db("products"); // ✅ EXPLICIT DB
+    const collection = db.collection("products");
 
-    const prod = await db
-      .collection("products")
-      .findOne({ _id: new ObjectId(id) });
+    const prod = await collection.findOne({ _id: new ObjectId(id) });
 
-    if (!prod)
+    if (!prod) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
-    const sanitized = { ...prod, id: prod._id.toString() };
-    return NextResponse.json(sanitized);
-  } catch (err) {
-    console.error(err);
+    return NextResponse.json({
+      ...prod,
+      id: prod._id.toString(),
+    });
+  } catch (error) {
+    console.error("GET /products/[id] error:", error);
     return NextResponse.json(
       { error: "Unable to fetch product" },
       { status: 500 }
@@ -30,30 +39,32 @@ export async function GET(
   }
 }
 
-export async function PUT(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function PUT(req: Request, { params }: Params) {
   try {
-    const { id } = await params;
+    const { id } = params;
+
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
+
     const body = await req.json();
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db("products");
+    const collection = db.collection("products");
 
-    const result = await db
-      .collection("products")
-      .updateOne(
-        { _id: new ObjectId(id) },
-        { $set: body }
-      );
+    const result = await collection.updateOne(
+      { _id: new ObjectId(id) },
+      { $set: body }
+    );
 
-    if (result.matchedCount === 0)
+    if (result.matchedCount === 0) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("PUT /products/[id] error:", error);
     return NextResponse.json(
       { error: "Unable to update product" },
       { status: 500 }
@@ -61,26 +72,29 @@ export async function PUT(
   }
 }
 
-export async function DELETE(
-  req: Request,
-  { params }: { params: Promise<{ id: string }> }
-) {
+export async function DELETE(req: Request, { params }: Params) {
   try {
-    const { id } = await params;
+    const { id } = params;
+
+    if (!ObjectId.isValid(id)) {
+      return NextResponse.json({ error: "Invalid ID" }, { status: 400 });
+    }
 
     const client = await clientPromise;
-    const db = client.db();
+    const db = client.db("products");
+    const collection = db.collection("products");
 
-    const result = await db
-      .collection("products")
-      .deleteOne({ _id: new ObjectId(id) });
+    const result = await collection.deleteOne({
+      _id: new ObjectId(id),
+    });
 
-    if (result.deletedCount === 0)
+    if (result.deletedCount === 0) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
 
     return NextResponse.json({ success: true });
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error("DELETE /products/[id] error:", error);
     return NextResponse.json(
       { error: "Unable to delete product" },
       { status: 500 }
