@@ -5,18 +5,18 @@ export async function GET() {
   try {
     const client = await clientPromise;
 
-    // ✅ MUST explicitly select DB
+    // 🔑 MUST MATCH ATLAS EXACTLY
     const db = client.db();
     const collection = db.collection("products");
 
     const products = await collection.find({}).toArray();
 
-    const sanitized = products.map(p => ({
-      ...p,
-      id: p._id.toString(),
-    }));
-    console.log("Fetched products:", sanitized);
-    return NextResponse.json(sanitized);
+    return NextResponse.json(
+      products.map(p => ({
+        ...p,
+        id: p._id.toString(),
+      }))
+    );
   } catch (error) {
     console.error("GET /api/products error:", error);
     return NextResponse.json(
